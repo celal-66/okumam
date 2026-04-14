@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Okuma Gelişim Takibi</title>
-    <!-- Site Logosu (Favicon) - logo.png kullanılıyor -->
+    <!-- Site Logosu (Favicon) -->
     <link rel="icon" href="logo.png" type="image/png">
     <!-- Tailwind CSS (Tasarım için) -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -49,32 +49,42 @@
         ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        /* Logo için özel çerçeve animasyonu */
+        .logo-container {
+            transition: transform 0.3s ease;
+        }
+        .logo-container:hover {
+            transform: scale(1.1);
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col text-slate-800 cursor-default">
 
     <!-- ÜST BİLGİ BARI & İLETİŞİM LİNKLERİ (Mobil Uyumlu) -->
-    <div class="bg-slate-900 text-slate-300 text-sm py-3 px-4 md:px-8 shadow-md z-50 relative select-none flex flex-col md:flex-row items-center justify-between w-full gap-3 md:gap-0">
+    <div class="bg-slate-900 text-slate-300 text-sm py-4 px-4 md:px-8 shadow-md z-50 relative select-none flex flex-col md:flex-row items-center justify-between w-full gap-4 md:gap-0">
         <!-- SOL: Logo ve Instagram -->
-        <div class="flex-1 flex justify-center md:justify-start items-center w-full md:w-auto flex-wrap gap-3">
+        <div class="flex-1 flex justify-center md:justify-start items-center w-full md:w-auto flex-wrap gap-4">
             
-            <!-- ANA LOGO (logo.png kullanılıyor) -->
-            <img src="logo.png" alt="Logo" class="h-9 w-9 md:h-11 md:w-11 rounded-full object-cover bg-white/20 p-0.5 shadow-sm border border-white/20 hover:scale-105 transition-transform cursor-default">
+            <!-- ANA LOGO - BOYUTU BÜYÜTÜLDÜ -->
+            <div class="logo-container relative">
+                <img src="logo.png" alt="Logo" class="h-16 w-16 md:h-24 md:w-24 rounded-full object-cover bg-white shadow-lg border-2 border-blue-500/50 p-0.5 cursor-pointer" onerror="this.src='https://ui-avatars.com/api/?name=Logo&background=0D8ABC&color=fff'">
+            </div>
             
-            <a href="https://www.instagram.com/celal_babayigit66/" target="_blank" rel="noopener noreferrer" class="flex items-center text-pink-400 hover:text-white transition-colors font-semibold text-xs md:text-sm bg-white/10 hover:bg-gradient-to-r hover:from-purple-500 hover:to-pink-500 px-4 py-2 rounded-full shadow-sm cursor-pointer border border-white/10">
-                <i class="fa-brands fa-instagram text-lg mr-2"></i> celal_babayigit66
+            <a href="https://www.instagram.com/celal_babayigit66/" target="_blank" rel="noopener noreferrer" class="flex items-center text-pink-400 hover:text-white transition-colors font-semibold text-xs md:text-sm bg-white/10 hover:bg-gradient-to-r hover:from-purple-500 hover:to-pink-500 px-4 py-2.5 rounded-full shadow-sm cursor-pointer border border-white/10">
+                <i class="fa-brands fa-instagram text-xl mr-2"></i> celal_babayigit66
             </a>
         </div>
         
         <!-- ORTA: Hazırlayanlar -->
-        <div class="flex-none tracking-widest font-bold text-center text-xs md:text-base order-first md:order-none mb-2 md:mb-0 mt-2 md:mt-0">
+        <div class="flex-none tracking-widest font-bold text-center text-xs md:text-lg order-first md:order-none mb-2 md:mb-0">
             <span class="opacity-70">HAZIRLAYANLAR:</span> <span class="text-white ml-1 md:ml-2">CELAL • HAKAN • MEHMET • AKİF</span>
         </div>
 
         <!-- SAĞ: Mail -->
-        <div class="flex-1 flex justify-center md:justify-end w-full md:w-auto mt-2 md:mt-0">
-            <a href="mailto:celalbabayigit6@gmail.com?subject=Okuma%20Gelişim%20Takibi%20Hakkında" class="flex items-center text-blue-400 hover:text-white transition-colors font-semibold text-xs md:text-sm bg-white/10 hover:bg-blue-600 px-4 py-2 rounded-full shadow-sm cursor-pointer border border-white/10">
-                <i class="fa-solid fa-envelope text-lg mr-2"></i> İletişim / Mail Gönder
+        <div class="flex-1 flex justify-center md:justify-end w-full md:w-auto">
+            <a href="mailto:celalbabayigit6@gmail.com?subject=Okuma%20Gelişim%20Takibi%20Hakkında" class="flex items-center text-blue-400 hover:text-white transition-colors font-semibold text-xs md:text-sm bg-white/10 hover:bg-blue-600 px-4 py-2.5 rounded-full shadow-sm cursor-pointer border border-white/10">
+                <i class="fa-solid fa-envelope text-xl mr-2"></i> celalbabayigit6@gmail.com
             </a>
         </div>
     </div>
@@ -114,7 +124,6 @@
         <!-- 1. ANA SAYFA EKRANI -->
         <div id="home-view" class="view-section w-full max-w-5xl flex flex-col items-center justify-center space-y-8 select-none">
             
-            <!-- Öğretmen Bilgi Kartı -->
             <div class="w-full flex justify-between items-center bg-white px-4 md:px-6 py-4 rounded-2xl border border-slate-100 shadow-sm mb-2">
                 <div class="flex items-center text-slate-700">
                     <div class="w-10 h-10 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-bold mr-3">
@@ -139,7 +148,6 @@
                 </h1>
             </div>
 
-            <!-- ORTALANMIŞ VE YAN YANA BUTONLAR (Mobilde alt alta) -->
             <div class="flex flex-col sm:flex-row justify-center gap-6 md:gap-8 w-full max-w-4xl mx-auto">
                 <button onclick="changeView('setup-view')" class="flex-1 group bg-white py-10 px-4 md:py-12 md:px-6 rounded-3xl shadow-lg shadow-slate-200/50 border border-slate-100 hover:border-blue-300 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl flex flex-col items-center text-center cursor-pointer relative overflow-hidden">
                     <div class="absolute inset-0 bg-gradient-to-br from-blue-50/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
@@ -246,8 +254,7 @@
             </div>
 
             <div class="bg-white p-6 md:p-10 rounded-3xl shadow-lg border border-slate-100 min-h-[300px] md:min-h-[400px]">
-                <div id="live-text-container" class="text-xl md:text-3xl leading-relaxed font-medium">
-                    </div>
+                <div id="live-text-container" class="text-xl md:text-3xl leading-relaxed font-medium"></div>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6">
@@ -304,7 +311,7 @@
                     </div>
                 </div>
 
-                <div class="p-6 md:p-10">
+                <div class="p-6 md:p-10 bg-white">
                     <div class="mb-6 md:mb-8 pb-4 md:pb-6 border-b border-slate-100 flex flex-col sm:flex-row items-center sm:items-start space-y-3 sm:space-y-0 sm:space-x-4 text-center sm:text-left">
                         <div class="w-14 h-14 md:w-16 md:h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-bold text-xl md:text-2xl" id="res-avatar">A</div>
                         <div>
@@ -336,8 +343,7 @@
                         <h3 class="text-xs md:text-sm font-bold text-slate-500 uppercase tracking-wider mb-3 md:mb-4 border-l-4 border-blue-500 pl-2 md:pl-3">
                             Metin Analizi
                         </h3>
-                        <div id="res-text-container" class="text-base md:text-lg leading-relaxed bg-slate-50 p-4 md:p-6 rounded-2xl border border-slate-200">
-                            </div>
+                        <div id="res-text-container" class="text-base md:text-lg leading-relaxed bg-slate-50 p-4 md:p-6 rounded-2xl border border-slate-200"></div>
                     </div>
                 </div>
             </div>
@@ -376,7 +382,7 @@
                 </div>
 
                 <div id="data-table-container" class="overflow-x-auto w-full">
-                    <div id="table-pdf-area" class="min-w-full inline-block align-middle bg-white p-2">
+                    <div id="table-pdf-area" class="min-w-full inline-block align-middle bg-white p-4">
                         <table class="min-w-full text-left border-collapse bg-white whitespace-nowrap">
                             <thead>
                                 <tr class="bg-slate-100 text-slate-600 uppercase text-[10px] md:text-xs font-bold tracking-wider">
@@ -389,8 +395,7 @@
                                     <th class="py-3 px-4 md:py-4 md:px-6 border-b border-slate-200 text-center">Başarı</th>
                                 </tr>
                             </thead>
-                            <tbody id="data-table-body" class="text-xs md:text-sm font-medium">
-                                </tbody>
+                            <tbody id="data-table-body" class="text-xs md:text-sm font-medium"></tbody>
                         </table>
                     </div>
                 </div>
@@ -491,7 +496,7 @@
             recognition.onerror = (event) => {
                 let errorMsg = "Tarayıcınız mikrofonu desteklemiyor veya izin verilmedi.";
                 if(event.error === 'not-allowed') {
-                    errorMsg = "Mikrofon izni reddedildi! Lütfen tarayıcı ayarlarından (kilit simgesi) mikrofona izin verin.";
+                    errorMsg = "Mikrofon izni reddedildi! Lütfen tarayıcı ayarlarından mikrofona izin verin.";
                 }
                 document.getElementById('microphone-error-text').innerText = errorMsg;
                 document.getElementById('microphone-error').classList.remove('hidden');
@@ -570,11 +575,9 @@
 
         function evaluateWords(isInitial = false) {
             const refOrig = referenceText.trim().split(/\s+/).filter(w => w.length > 0);
-            
             if (isInitial) {
                 evaluatedWordsArray = refOrig.map(word => ({ word, status: 'pending' }));
-                renderLiveWords();
-                return;
+                renderLiveWords(); return;
             }
 
             const refClean = refOrig.map(w => normalizeWord(w));
@@ -630,9 +633,7 @@
             renderLiveWords();
             updateStatsUI();
 
-            if(stats.totalRead > 0 && stats.totalRead === refOrig.length) {
-                finishReading();
-            }
+            if(stats.totalRead > 0 && stats.totalRead === refOrig.length) { finishReading(); }
         }
 
         function renderLiveWords() {
@@ -708,14 +709,13 @@
             let records = JSON.parse(localStorage.getItem(dataKey)) || [];
             records.unshift(record);
             localStorage.setItem(dataKey, JSON.stringify(records));
-
             changeView('home-view');
         }
 
         function getShareText() {
             const timeSpent = initialDuration - Math.max(0, timeLeft);
             const accuracy = stats.totalRead > 0 ? Math.round((stats.correct / stats.totalRead) * 100) : 0;
-            return `*Okuma Değerlendirme Raporu*\n\nÖğretmen: ${currentTeacher}\nÖğrenci: ${studentName}\nOkunan Kelime: ${stats.totalRead}\nDoğru: ${stats.correct}\nYanlış: ${stats.incorrect}\nSüre: ${timeSpent} sn\nBaşarı: %${accuracy}\n\n_Okuma Gelişim Takibi ile hazırlanmıştır._`;
+            return `*Okuma Değerlendirme Raporu*\n\nÖğretmen: ${currentTeacher}\nÖğrenci: ${studentName}\nOkunan Kelime: ${stats.totalRead}\nDoğru: ${stats.correct}\nYanlış: ${stats.incorrect}\nHarcanan Süre: ${timeSpent} sn\nBaşarı: %${accuracy}\n\n_Okuma Gelişim Takibi ile hazırlanmıştır._`;
         }
 
         function shareWhatsApp() {
@@ -733,7 +733,6 @@
 
         function downloadResultPDF() {
             const element = document.getElementById('pdf-export-area');
-            element.style.backgroundColor = '#ffffff';
             const opt = {
                 margin:       0.2,
                 filename:     `${studentName}_Okuma_Raporu.pdf`,
@@ -741,12 +740,11 @@
                 html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#ffffff' },
                 jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
             };
-            html2pdf().set(opt).from(element).save().then(() => { element.style.backgroundColor = ''; });
+            html2pdf().set(opt).from(element).save();
         }
 
         function downloadTablePDF() {
             const element = document.getElementById('table-pdf-area');
-            element.style.backgroundColor = '#ffffff';
             const opt = {
                 margin:       0.2,
                 filename:     `${currentTeacher}_Sinif_Raporlari.pdf`,
@@ -754,7 +752,7 @@
                 html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#ffffff' },
                 jsPDF:        { unit: 'in', format: 'a4', orientation: 'landscape' }
             };
-            html2pdf().set(opt).from(element).save().then(() => { element.style.backgroundColor = ''; });
+            html2pdf().set(opt).from(element).save();
         }
 
         function renderDataView() {
@@ -778,7 +776,6 @@
             const tbody = document.getElementById('data-table-body');
             const emptyMsg = document.getElementById('empty-data-msg');
             const tableContainer = document.getElementById('data-table-container');
-
             tbody.innerHTML = '';
             if (records.length === 0) {
                 emptyMsg.classList.remove('hidden'); emptyMsg.classList.add('flex');
@@ -786,15 +783,14 @@
             } else {
                 emptyMsg.classList.add('hidden'); emptyMsg.classList.remove('flex');
                 tableContainer.classList.remove('hidden');
-
                 records.forEach((r, index) => {
-                    let badgeClass = r.accuracy > 80 ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' : 
-                                     r.accuracy > 50 ? 'bg-amber-100 text-amber-800 border border-amber-200' : 'bg-red-100 text-red-800 border border-red-200';
+                    let badgeClass = r.accuracy > 80 ? 'bg-emerald-100 text-emerald-800' : 
+                                     r.accuracy > 50 ? 'bg-amber-100 text-amber-800' : 'bg-red-100 text-red-800';
                     let bgClass = index % 2 === 0 ? 'bg-white' : 'bg-slate-50/50';
                     const tr = document.createElement('tr');
                     tr.className = `border-b border-slate-100 hover:bg-blue-50/50 transition-colors ${bgClass}`;
                     tr.innerHTML = `
-                        <td class="py-3 px-4 md:py-4 md:px-6 whitespace-nowrap text-[10px] md:text-xs text-slate-500">${r.date}</td>
+                        <td class="py-3 px-4 md:py-4 md:px-6 text-[10px] md:text-xs text-slate-500">${r.date}</td>
                         <td class="py-3 px-4 md:py-4 md:px-6 font-bold text-slate-800">${r.studentName}</td>
                         <td class="py-3 px-4 md:py-4 md:px-6 text-center text-slate-600 font-medium">${r.duration}</td>
                         <td class="py-3 px-4 md:py-4 md:px-6 text-center text-blue-600 font-bold">${r.totalRead}</td>
