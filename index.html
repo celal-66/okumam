@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Okuma Gelişim Takibi</title>
+    <!-- Site Logosu (Favicon) -->
+    <link rel="icon" href="logo.png" type="image/png">
+    <!-- Tailwind CSS (Tasarım için) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome (İkonlar için) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- html2pdf.js (PDF Çıktısı İçin) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+        .view-section {
+            display: none;
+            animation: fadeIn 0.4s ease-out forwards;
+            opacity: 0;
+            transform: translateY(15px);
+        }
+        .view-section.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .word-box {
+            display: inline-block;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+            padding: 0.25rem 0.6rem;
+            border-radius: 0.375rem;
+            transition: all 0.2s;
+            line-height: 1.5;
+        }
+        .word-pending { color: #64748b; } 
+        .word-correct { color: #15803d; background-color: #dcfce3; font-weight: 700; transform: scale(1.02); border: 1px solid #bbf7d0; } 
+        .word-incorrect { color: #b91c1c; background-color: #fee2e2; font-weight: 700; text-decoration: underline wavy #f87171; border: 1px solid #fecaca; } 
+        
+        /* Özelleştirilmiş Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col text-slate-800 cursor-default">
+
+    <!-- ÜST BİLGİ BARI & İLETİŞİM LİNKLERİ (Mobil Uyumlu) -->
+    <div class="bg-slate-900 text-slate-300 text-sm py-3 px-4 md:px-8 shadow-md z-50 relative select-none flex flex-col md:flex-row items-center justify-between w-full gap-3 md:gap-0">
+        <!-- SOL: Dahili Logo ve Instagram -->
+        <div class="flex-1 flex justify-center md:justify-start items-center w-full md:w-auto flex-wrap gap-3">
+            
+            <!-- SİTE LOGOSU -->
+            <img src="logo.png" alt="Site Logosu" class="h-10 w-10 md:h-12 md:w-12 rounded-full object-cover bg-white/10 p-0.5 shadow-sm border border-white/20 hover:scale-105 transition-transform cursor-default" onerror="this.style.display='none'">
+            
+            <a href="https://www.instagram.com/celal_babayigit66/" target="_blank" rel="noopener noreferrer" class="flex items-center text-pink-400 hover:text-white transition-colors font-semibold text-xs md:text-sm bg-white/10 hover:bg-gradient-to-r hover:from-purple-500 hover:to-pink-500 px-4 py-2 rounded-full shadow-sm cursor-pointer border border-white/10">
+                <i class="fa-brands fa-instagram text-lg mr-2"></i> celal_babayigit66
+            </a>
+        </div>
+        
+        <!-- ORTA: Hazırlayanlar -->
+        <div class="flex-none tracking-widest font-bold text-center text-xs md:text-base order-first md:order-none mb-2 md:mb-0 mt-2 md:mt-0">
+            <span class="opacity-70">HAZIRLAYANLAR:</span> <span class="text-white ml-1 md:ml-2">CELAL • HAKAN • MEHMET • AKİF</span>
+        </div>
+
+        <!-- SAĞ: Mail -->
+        <div class="flex-1 flex justify-center md:justify-end w-full md:w-auto mt-2 md:mt-0">
+            <a href="mailto:celalbabayigit6@gmail.com?subject=Okuma%20Gelişim%20Takibi%20Hakkında" class="flex items-center text-blue-400 hover:text-white transition-colors font-semibold text-xs md:text-sm bg-white/10 hover:bg-blue-600 px-4 py-2 rounded-full shadow-sm cursor-pointer border border-white/10">
+                <i class="fa-solid fa-envelope text-lg mr-2"></i> İletişim / Mail Gönder
+            </a>
+        </div>
+    </div>
+
+    <!-- ANA İÇERİK ALANI -->
+    <div class="flex-grow p-4 sm:p-6 md:p-10 relative flex flex-col items-center justify-center">
+
+        <!-- 0. ÖĞRETMEN GİRİŞ/KAYIT EKRANI -->
+        <div id="login-view" class="view-section active w-full max-w-md bg-white rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-100 overflow-hidden select-none mx-auto">
+            <div class="bg-gradient-to-r from-blue-600 to-indigo-700 p-8 text-center text-white">
+                <i class="fa-solid fa-chalkboard-user text-5xl mb-4 text-blue-200"></i>
+                <h2 class="text-2xl md:text-3xl font-bold">Öğretmen Girişi</h2>
+                <p class="text-blue-100 text-sm mt-2">Kendi sınıfınızı ve raporlarınızı yönetin.</p>
+            </div>
+            <div class="p-6 md:p-8 space-y-5">
+                <div>
+                    <label class="block text-sm font-bold text-slate-700 mb-2">Öğretmen Adı Soyadı</label>
+                    <div class="relative">
+                        <i class="fa-regular fa-user absolute left-4 top-3.5 text-slate-400"></i>
+                        <input type="text" id="teacher-name" class="w-full pl-11 pr-4 py-3 rounded-xl border border-slate-200 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none text-slate-700 font-medium bg-slate-50 cursor-text" placeholder="Örn: Celal Hoca">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-slate-700 mb-2">Güvenlik Şifresi</label>
+                    <div class="relative">
+                        <i class="fa-solid fa-lock absolute left-4 top-3.5 text-slate-400"></i>
+                        <input type="password" id="teacher-pass" class="w-full pl-11 pr-4 py-3 rounded-xl border border-slate-200 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none text-slate-700 font-medium bg-slate-50 cursor-text" placeholder="Şifre belirleyin veya girin">
+                    </div>
+                    <p class="text-xs text-slate-500 mt-2 leading-relaxed"><i class="fa-solid fa-circle-info mr-1"></i> İlk kez giriyorsanız yazdığınız şifre ile otomatik hesabınız oluşturulur.</p>
+                </div>
+                <button onclick="loginTeacher()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-3.5 rounded-xl transition-all shadow-md hover:-translate-y-0.5 mt-2 cursor-pointer">
+                    Giriş Yap / Kaydol
+                </button>
+            </div>
+        </div>
+        
+        <!-- 1. ANA SAYFA EKRANI -->
+        <div id="home-view" class="view-section w-full max-w-5xl flex flex-col items-center justify-center space-y-8 select-none">
+            
+            <!-- Öğretmen Bilgi Kartı -->
+            <div class="w-full flex justify-between items-center bg-white px-4 md:px-6 py-4 rounded-2xl border border-slate-100 shadow-sm mb-2">
+                <div class="flex items-center text-slate-700">
+                    <div class="w-10 h-10 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-bold mr-3">
+                        <i class="fa-solid fa-graduation-cap"></i>
+                    </div>
+                    <div>
+                        <p class="text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-wider">Aktif Oturum</p>
+                        <p class="text-sm sm:text-base font-bold" id="logged-teacher-name">Öğretmen</p>
+                    </div>
+                </div>
+                <button onclick="logoutTeacher()" class="text-red-500 hover:text-white hover:bg-red-500 border border-red-200 px-3 md:px-4 py-2 rounded-lg text-xs md:text-sm font-bold transition-colors cursor-pointer">
+                    <i class="fa-solid fa-right-from-bracket md:mr-1"></i> <span class="hidden md:inline">Çıkış Yap</span>
+                </button>
+            </div>
+
+            <div class="text-center mb-4">
+                <div class="inline-flex items-center justify-center p-3 md:p-4 bg-white rounded-2xl shadow-sm border border-slate-100 mb-4">
+                    <i class="fa-solid fa-book-open-reader text-4xl md:text-5xl text-blue-600"></i>
+                </div>
+                <h1 class="text-3xl sm:text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-indigo-700 drop-shadow-sm mb-2 tracking-tight">
+                    OKUMA GELİŞİM TAKİBİ
+                </h1>
+            </div>
+
+            <!-- ORTALANMIŞ VE YAN YANA BUTONLAR (Mobilde alt alta) -->
+            <div class="flex flex-col sm:flex-row justify-center gap-6 md:gap-8 w-full max-w-4xl mx-auto">
+                <button onclick="changeView('setup-view')" class="flex-1 group bg-white py-10 px-4 md:py-12 md:px-6 rounded-3xl shadow-lg shadow-slate-200/50 border border-slate-100 hover:border-blue-300 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl flex flex-col items-center text-center cursor-pointer relative overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-br from-blue-50/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <div class="w-20 h-20 md:w-24 md:h-24 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mb-4 md:mb-6 mx-auto group-hover:scale-110 transition-transform duration-300 shadow-inner">
+                        <i class="fa-solid fa-microphone-lines text-3xl md:text-4xl"></i>
+                    </div>
+                    <h2 class="text-xl md:text-2xl lg:text-3xl font-bold text-slate-800">Yeni Okuma Çalışması</h2>
+                </button>
+
+                <button onclick="renderDataView()" class="flex-1 group bg-white py-10 px-4 md:py-12 md:px-6 rounded-3xl shadow-lg shadow-slate-200/50 border border-slate-100 hover:border-emerald-300 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl flex flex-col items-center text-center cursor-pointer relative overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-br from-emerald-50/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <div class="w-20 h-20 md:w-24 md:h-24 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center mb-4 md:mb-6 mx-auto group-hover:scale-110 transition-transform duration-300 shadow-inner">
+                        <i class="fa-solid fa-chart-pie text-3xl md:text-4xl"></i>
+                    </div>
+                    <h2 class="text-xl md:text-2xl lg:text-3xl font-bold text-slate-800">Raporlar</h2>
+                </button>
+            </div>
+        </div>
+
+        <!-- 2. KURULUM EKRANI -->
+        <div id="setup-view" class="view-section w-full max-w-3xl bg-white rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-100 overflow-hidden select-none">
+            <div class="bg-slate-50 border-b border-slate-100 p-4 md:p-6 flex items-center justify-between">
+                <div class="flex items-center space-x-3 md:space-x-4">
+                    <button onclick="changeView('home-view')" class="text-slate-400 hover:text-slate-700 bg-white shadow-sm border border-slate-200 p-2 md:p-2.5 rounded-full transition-colors cursor-pointer">
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </button>
+                    <h2 class="text-lg md:text-xl font-bold text-slate-800">Çalışma Ayarları</h2>
+                </div>
+                <div class="text-blue-600 bg-blue-50 px-2 md:px-3 py-1 rounded-full text-xs md:text-sm font-semibold border border-blue-100">
+                    <i class="fa-solid fa-sliders mr-1"></i> Kurulum
+                </div>
+            </div>
+            
+            <div class="p-6 md:p-8 space-y-6 md:space-y-8">
+                <div>
+                    <label class="block text-sm font-bold text-slate-700 mb-2 md:mb-3">Öğrenci Adı ve Soyadı</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                            <i class="fa-regular fa-user text-slate-400"></i>
+                        </div>
+                        <input type="text" id="input-student-name" class="w-full pl-11 pr-4 py-3 md:py-3.5 rounded-xl border border-slate-200 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all outline-none text-slate-700 font-medium bg-slate-50 focus:bg-white cursor-text text-base" placeholder="Örn: Ayşe Yılmaz">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-bold text-slate-700 mb-2 md:mb-3">Okunacak Metin</label>
+                    <textarea id="input-reference-text" class="w-full px-4 py-4 rounded-xl border border-slate-200 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all outline-none text-slate-700 text-base md:text-lg h-40 md:h-48 resize-none bg-slate-50 focus:bg-white leading-relaxed cursor-text" placeholder="Öğrencinin okuyacağı metni buraya yapıştırın...">Küçük kedi miyav dedi. Karnım acıktı süt ver bana. Köpek hav hav diyerek koştu.</textarea>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-bold text-slate-700 mb-2 md:mb-3">Süre Sınırı (Saniye)</label>
+                    <div class="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
+                        <div class="relative w-full sm:w-auto">
+                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                <i class="fa-regular fa-clock text-slate-400"></i>
+                            </div>
+                            <input type="number" id="input-duration" value="60" class="w-full sm:w-36 pl-11 pr-4 py-3 md:py-3.5 rounded-xl border border-slate-200 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all outline-none font-bold text-slate-700 bg-slate-50 focus:bg-white cursor-text text-base" min="10" max="600">
+                        </div>
+                        <span class="text-slate-500 text-xs md:text-sm font-medium">Saniye sonra otomatik kapanır</span>
+                    </div>
+                </div>
+
+                <div class="pt-2 md:pt-4">
+                    <button onclick="startReading()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 md:py-4 px-8 rounded-xl shadow-lg shadow-blue-600/30 transition-all transform hover:-translate-y-0.5 flex items-center justify-center text-base md:text-lg cursor-pointer">
+                        <i class="fa-solid fa-microphone mr-3"></i> Dinlemeyi Başlat
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. OKUMA (CANLI) EKRANI -->
+        <div id="reading-view" class="view-section w-full max-w-5xl flex flex-col space-y-4 md:space-y-6 select-none">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white p-4 md:p-6 rounded-2xl shadow-md border border-slate-100 gap-4 sm:gap-0">
+                <div class="flex items-center space-x-3 md:space-x-4">
+                    <div id="reading-avatar" class="w-12 h-12 md:w-14 md:h-14 bg-gradient-to-br from-blue-500 to-indigo-600 text-white rounded-full flex items-center justify-center font-bold text-xl md:text-2xl shadow-inner">A</div>
+                    <div>
+                        <h3 id="reading-student-name" class="text-lg md:text-xl font-bold text-slate-800">Öğrenci Adı</h3>
+                        <div class="flex items-center text-red-500 mt-1">
+                            <span class="relative flex h-2 w-2 md:h-3 md:w-3 mr-2">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-2 w-2 md:h-3 md:w-3 bg-red-500"></span>
+                            </span>
+                            <span id="mic-status-text" class="text-xs md:text-sm font-bold tracking-wide">MİKROFON BEKLENİYOR...</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-center space-x-4 md:space-x-6 w-full sm:w-auto justify-between sm:justify-end">
+                    <div class="text-center bg-slate-50 px-4 md:px-6 py-2 rounded-xl border border-slate-200">
+                        <p class="text-[10px] md:text-xs text-slate-500 font-bold mb-1 uppercase tracking-wider">Kalan Süre</p>
+                        <div id="timer-display" class="text-2xl md:text-4xl font-black font-mono text-slate-800 tracking-tight">--:--</div>
+                    </div>
+                    <button onclick="stopReadingEarly()" class="bg-red-50 hover:bg-red-500 hover:text-white text-red-600 border border-red-200 hover:border-red-500 font-bold py-2 px-4 md:py-3 md:px-6 rounded-xl transition-all duration-300 flex items-center cursor-pointer text-sm md:text-base">
+                        <i class="fa-solid fa-stop mr-2"></i> Bitir
+                    </button>
+                </div>
+            </div>
+
+            <div id="microphone-error" class="hidden bg-red-50 border-l-4 border-red-500 text-red-700 p-4 rounded-r-xl shadow-sm text-sm md:text-base">
+                <div class="flex items-center">
+                    <i class="fa-solid fa-triangle-exclamation mr-3 text-xl"></i>
+                    <p id="microphone-error-text" class="font-medium">Tarayıcınız mikrofonu desteklemiyor veya izin verilmedi. Lütfen site ayarlarına gidip mikrofona izin verin.</p>
+                </div>
+            </div>
+
+            <div class="bg-white p-6 md:p-10 rounded-3xl shadow-lg border border-slate-100 min-h-[300px] md:min-h-[400px]">
+                <div id="live-text-container" class="text-xl md:text-3xl leading-relaxed font-medium">
+                    <!-- Kelimeler buraya JS ile eklenecek -->
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-4 md:p-5 flex flex-col relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-1 h-full bg-blue-500"></div>
+                    <span class="text-slate-500 font-semibold text-xs md:text-sm uppercase tracking-wider mb-1 md:mb-2">Okunan</span>
+                    <span id="stat-total" class="text-3xl md:text-4xl font-black text-slate-800">0</span>
+                </div>
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-4 md:p-5 flex flex-col relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-1 h-full bg-emerald-500"></div>
+                    <span class="text-slate-500 font-semibold text-xs md:text-sm uppercase tracking-wider mb-1 md:mb-2">Doğru</span>
+                    <span id="stat-correct" class="text-3xl md:text-4xl font-black text-emerald-600">0</span>
+                </div>
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-4 md:p-5 flex flex-col relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-1 h-full bg-red-500"></div>
+                    <span class="text-slate-500 font-semibold text-xs md:text-sm uppercase tracking-wider mb-1 md:mb-2">Yanlış</span>
+                    <span id="stat-incorrect" class="text-3xl md:text-4xl font-black text-red-600">0</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. SONUÇLAR EKRANI -->
+        <div id="results-view" class="view-section w-full max-w-4xl space-y-4 md:space-y-6 select-none">
+            
+            <!-- Paylaşım & Aksiyon Butonları -->
+            <div class="flex flex-col sm:flex-row justify-between items-center bg-white p-3 md:p-4 rounded-2xl shadow-sm border border-slate-200 gap-3 sm:gap-0">
+                <button onclick="saveResults()" class="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 md:py-2.5 px-6 rounded-xl transition-all text-sm md:text-base flex items-center justify-center cursor-pointer shadow-md">
+                    <i class="fa-solid fa-save mr-2"></i> Raporu Kaydet & Bitir
+                </button>
+                
+                <div class="flex items-center space-x-2 md:space-x-3 w-full sm:w-auto justify-center">
+                    <span class="hidden md:inline text-sm font-bold text-slate-500 mr-2 uppercase tracking-wide">Paylaş:</span>
+                    <button onclick="shareWhatsApp()" class="flex-1 sm:flex-none bg-green-500 hover:bg-green-600 text-white p-2.5 md:p-3 rounded-xl shadow-sm transition-colors tooltip relative group cursor-pointer flex justify-center items-center">
+                        <i class="fa-brands fa-whatsapp text-lg md:text-xl"></i>
+                    </button>
+                    <button onclick="shareNative()" class="flex-1 sm:flex-none bg-blue-500 hover:bg-blue-600 text-white p-2.5 md:p-3 rounded-xl shadow-sm transition-colors relative group cursor-pointer flex justify-center items-center">
+                        <i class="fa-solid fa-share-nodes text-lg md:text-xl"></i>
+                    </button>
+                    <button onclick="downloadResultPDF()" class="flex-1 sm:flex-none bg-red-500 hover:bg-red-600 text-white p-2.5 md:p-3 rounded-xl shadow-sm transition-colors relative group cursor-pointer flex justify-center items-center">
+                        <i class="fa-solid fa-file-pdf text-lg md:text-xl"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- PDF İÇİN ÇIKTI ALINACAK ALAN -->
+            <div id="pdf-export-area" class="bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden">
+                <div class="bg-gradient-to-r from-slate-800 to-slate-700 p-6 md:p-8 text-white flex flex-col sm:flex-row justify-between items-center text-center sm:text-left gap-4 sm:gap-0">
+                    <div>
+                        <h2 class="text-2xl md:text-3xl font-extrabold mb-1">Okuma Değerlendirme Raporu</h2>
+                        <p id="results-subtitle" class="text-slate-300 text-sm md:text-lg">Öğrenci Performans Analizi</p>
+                    </div>
+                    <div class="text-center sm:text-right">
+                        <div id="res-date" class="text-xs md:text-sm font-medium text-slate-300 mb-1">Tarih</div>
+                        <div class="text-3xl md:text-4xl text-blue-400"><i class="fa-solid fa-award"></i></div>
+                    </div>
+                </div>
+
+                <div class="p-6 md:p-10">
+                    <div class="mb-6 md:mb-8 pb-4 md:pb-6 border-b border-slate-100 flex flex-col sm:flex-row items-center sm:items-start space-y-3 sm:space-y-0 sm:space-x-4 text-center sm:text-left">
+                        <div class="w-14 h-14 md:w-16 md:h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-bold text-xl md:text-2xl" id="res-avatar">A</div>
+                        <div>
+                            <p class="text-xs md:text-sm font-bold text-slate-400 uppercase tracking-widest">ÖĞRENCİ</p>
+                            <h3 class="text-xl md:text-2xl font-black text-slate-800" id="res-student-name">Öğrenci Adı</h3>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 md:gap-4 mb-6 md:mb-10">
+                        <div class="bg-slate-50 rounded-2xl p-4 md:p-5 border border-slate-100">
+                            <p class="text-slate-500 text-[10px] md:text-xs font-bold uppercase mb-1">Süre</p>
+                            <p class="text-xl md:text-2xl font-black text-slate-800"><span id="res-time">0</span><span class="text-xs md:text-sm text-slate-500 ml-1">sn</span></p>
+                        </div>
+                        <div class="bg-blue-50/50 rounded-2xl p-4 md:p-5 border border-blue-100">
+                            <p class="text-blue-600 text-[10px] md:text-xs font-bold uppercase mb-1">Top. Kelime</p>
+                            <p id="res-total" class="text-xl md:text-2xl font-black text-blue-800">0</p>
+                        </div>
+                        <div class="bg-emerald-50/50 rounded-2xl p-4 md:p-5 border border-emerald-100">
+                            <p class="text-emerald-600 text-[10px] md:text-xs font-bold uppercase mb-1">Doğru</p>
+                            <p id="res-correct" class="text-xl md:text-2xl font-black text-emerald-700">0</p>
+                        </div>
+                        <div class="bg-red-50/50 rounded-2xl p-4 md:p-5 border border-red-100">
+                            <p class="text-red-600 text-[10px] md:text-xs font-bold uppercase mb-1">Yanlış/Atlanan</p>
+                            <p id="res-incorrect" class="text-xl md:text-2xl font-black text-red-700">0</p>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 class="text-xs md:text-sm font-bold text-slate-500 uppercase tracking-wider mb-3 md:mb-4 border-l-4 border-blue-500 pl-2 md:pl-3">
+                            Metin Analizi
+                        </h3>
+                        <div id="res-text-container" class="text-base md:text-lg leading-relaxed bg-slate-50 p-4 md:p-6 rounded-2xl border border-slate-200">
+                            <!-- İşaretlenmiş metin buraya gelecek -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+
+        <!-- 5. VERİLER EKRANI -->
+        <div id="data-view" class="view-section w-full max-w-6xl bg-white rounded-3xl shadow-xl shadow-slate-200 border border-slate-100 overflow-hidden select-none">
+            <div class="bg-slate-800 p-4 md:p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div class="flex items-center">
+                    <button onclick="changeView('home-view')" class="mr-3 md:mr-4 hover:bg-slate-700 text-white p-2 rounded-full transition-colors border border-slate-600 cursor-pointer">
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </button>
+                    <h2 class="text-lg md:text-xl font-bold text-white flex items-center tracking-wide">
+                        <i class="fa-solid fa-database mr-2 md:mr-3 text-emerald-400"></i> Sınıf Arşivi
+                    </h2>
+                </div>
+                <div class="flex flex-col sm:flex-row items-center space-y-3 sm:space-y-0 sm:space-x-3 w-full md:w-auto">
+                    <!-- ÖĞRENCİ ARAMA ÇUBUĞU -->
+                    <div class="relative w-full sm:w-auto">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-slate-400"></i>
+                        <input type="text" id="search-student" oninput="filterData()" placeholder="Öğrenci Ara..." class="w-full sm:w-48 pl-9 pr-3 py-2.5 md:py-2 rounded-lg bg-slate-700 border border-slate-600 text-white text-sm focus:ring-2 focus:ring-blue-500 outline-none cursor-text placeholder-slate-400">
+                    </div>
+                    <button onclick="downloadTablePDF()" class="w-full sm:w-auto bg-white/10 hover:bg-white/20 text-white px-4 py-2.5 md:py-2 rounded-lg font-semibold text-sm transition border border-white/20 flex items-center justify-center cursor-pointer">
+                        <i class="fa-solid fa-download mr-2"></i> İndir (PDF)
+                    </button>
+                    <button onclick="clearData()" class="w-full sm:w-auto bg-red-500/80 hover:bg-red-500 text-white px-4 py-2.5 md:py-2 rounded-lg font-semibold text-sm transition cursor-pointer">
+                        <i class="fa-solid fa-trash-can mr-2"></i> Temizle
+                    </button>
+                </div>
+            </div>
+
+            <div class="p-0">
+                <div id="empty-data-msg" class="hidden text-center py-16 md:py-24 text-slate-400 flex-col items-center bg-slate-50 px-4">
+                    <i class="fa-solid fa-folder-open text-5xl md:text-6xl mb-4 text-slate-300"></i>
+                    <p class="text-base md:text-lg font-medium">Bu sınıfa ait kaydedilmiş rapor bulunamadı.</p>
+                </div>
+
+                <div id="data-table-container" class="overflow-x-auto w-full">
+                    <!-- Tablo PDF çıktısı için sarmalandı -->
+                    <div id="table-pdf-area" class="min-w-full inline-block align-middle">
+                        <table class="min-w-full text-left border-collapse bg-white whitespace-nowrap">
+                            <thead>
+                                <tr class="bg-slate-100 text-slate-600 uppercase text-[10px] md:text-xs font-bold tracking-wider">
+                                    <th class="py-3 px-4 md:py-4 md:px-6 border-b border-slate-200">Tarih</th>
+                                    <th class="py-3 px-4 md:py-4 md:px-6 border-b border-slate-200">Öğrenci Adı</th>
+                                    <th class="py-3 px-4 md:py-4 md:px-6 border-b border-slate-200 text-center">Süre (sn)</th>
+                                    <th class="py-3 px-4 md:py-4 md:px-6 border-b border-slate-200 text-center">Okunan</th>
+                                    <th class="py-3 px-4 md:py-4 md:px-6 border-b border-slate-200 text-center text-emerald-600">Doğru</th>
+                                    <th class="py-3 px-4 md:py-4 md:px-6 border-b border-slate-200 text-center text-red-600">Yanlış</th>
+                                    <th class="py-3 px-4 md:py-4 md:px-6 border-b border-slate-200 text-center">Başarı</th>
+                                </tr>
+                            </thead>
+                            <tbody id="data-table-body" class="text-xs md:text-sm font-medium">
+                                <!-- Veriler JS ile doldurulacak -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT KODLARI -->
+    <script>
+        // --- Uygulama ve Öğretmen Değişkenleri ---
+        let currentTeacher = null;
+        let allTeacherRecords = []; 
+        
+        let studentName = '';
+        let referenceText = '';
+        let initialDuration = 60;
+        let timeLeft = 0;
+        let isReading = false;
+        let timerInterval = null;
+        let isTimerRunning = false; // Sayacın doğru zamanda başlaması için eklendi
+        let recognizedText = '';
+        
+        let stats = { correct: 0, incorrect: 0, totalRead: 0 };
+        let evaluatedWordsArray = [];
+
+        // --- Başlangıç Kontrolü ---
+        window.onload = function() {
+            const savedTeacher = localStorage.getItem('activeTeacher');
+            if(savedTeacher) {
+                currentTeacher = savedTeacher;
+                document.getElementById('logged-teacher-name').innerText = currentTeacher;
+                changeView('home-view');
+            } else {
+                changeView('login-view');
+            }
+        };
+
+        function loginTeacher() {
+            const name = document.getElementById('teacher-name').value.trim();
+            const pass = document.getElementById('teacher-pass').value.trim();
+
+            if(!name || !pass) {
+                alert("Lütfen isim ve şifrenizi girin.");
+                return;
+            }
+
+            let accounts = JSON.parse(localStorage.getItem('teacherAccounts')) || {};
+            
+            if(accounts[name]) {
+                if(accounts[name] !== pass) {
+                    alert("Girdiğiniz şifre bu öğretmen hesabıyla eşleşmiyor!");
+                    return;
+                }
+            } else {
+                accounts[name] = pass;
+                localStorage.setItem('teacherAccounts', JSON.stringify(accounts));
+                alert(`Hoş geldin ${name}! Hesabın oluşturuldu.`);
+            }
+
+            currentTeacher = name;
+            localStorage.setItem('activeTeacher', name);
+            document.getElementById('logged-teacher-name').innerText = currentTeacher;
+            
+            document.getElementById('teacher-name').value = '';
+            document.getElementById('teacher-pass').value = '';
+            changeView('home-view');
+        }
+
+        function logoutTeacher() {
+            currentTeacher = null;
+            localStorage.removeItem('activeTeacher');
+            changeView('login-view');
+        }
+        
+        // --- Mikrofon (Speech Recognition) Kurulumu ---
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        let recognition = null;
+        if (SpeechRecognition) {
+            recognition = new SpeechRecognition();
+            recognition.lang = 'tr-TR';
+            recognition.continuous = true;
+            recognition.interimResults = true;
+
+            // Mikrofon izin alınıp dinlemeye başladığı "an" burasıdır. Sayaç burada başlar!
+            recognition.onstart = () => {
+                if (!isTimerRunning && isReading) {
+                    isTimerRunning = true;
+                    document.getElementById('mic-status-text').innerText = "AKTİF DİNLEME";
+                    updateTimerDisplay(); // Ekrana süreyi bas
+                    
+                    timerInterval = setInterval(() => {
+                        timeLeft--;
+                        updateTimerDisplay();
+                        if (timeLeft <= 0) {
+                            finishReading();
+                        }
+                    }, 1000);
+                }
+            };
+
+            recognition.onresult = (event) => {
+                let currentTranscript = '';
+                for (let i = 0; i < event.results.length; i++) {
+                    currentTranscript += event.results[i][0].transcript + ' ';
+                }
+                recognizedText = currentTranscript.trim();
+                evaluateWords();
+            };
+
+            recognition.onerror = (event) => {
+                console.error("Mikrofon Hatası:", event.error);
+                let errorMsg = "Tarayıcınız mikrofonu desteklemiyor veya izin verilmedi.";
+                if(event.error === 'not-allowed') {
+                    errorMsg = "Mikrofon izni reddedildi! Lütfen tarayıcı ayarlarından (adres çubuğundaki kilit simgesi) mikrofona izin verin ve sayfayı yenileyin.";
+                }
+                document.getElementById('microphone-error-text').innerText = errorMsg;
+                document.getElementById('microphone-error').classList.remove('hidden');
+                
+                isReading = false;
+                isTimerRunning = false;
+                clearInterval(timerInterval);
+                document.getElementById('timer-display').innerText = "--:--";
+            };
+
+            recognition.onend = () => {
+                if (isReading && timeLeft > 0) {
+                    try { recognition.start(); } catch(e) {}
+                }
+            };
+        }
+
+        // --- Ekran Değiştirme Fonksiyonu ---
+        function changeView(viewId) {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+            document.getElementById(viewId).classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
+        // --- Sesli Uyarı ---
+        function playBeep() {
+            try {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                const ctx = new AudioContext();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(800, ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(300, ctx.currentTime + 1.5);
+                gain.gain.setValueAtTime(1, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 1.5);
+                osc.start();
+                osc.stop(ctx.currentTime + 1.5);
+            } catch (e) { console.log(e); }
+        }
+
+        // --- Okumayı Başlatma ---
+        function startReading() {
+            studentName = document.getElementById('input-student-name').value.trim();
+            referenceText = document.getElementById('input-reference-text').value.trim();
+            initialDuration = parseInt(document.getElementById('input-duration').value) || 60;
+
+            if (!studentName || !referenceText) {
+                alert("Lütfen öğrenci adını ve metni doldurunuz!");
+                return;
+            }
+
+            if (!recognition) {
+                alert("Tarayıcınız ses tanıma özelliğini desteklemiyor. Lütfen Google Chrome veya Safari kullanın.");
+                return;
+            }
+
+            document.getElementById('reading-student-name').innerText = studentName;
+            document.getElementById('reading-avatar').innerText = studentName.charAt(0).toUpperCase();
+            document.getElementById('microphone-error').classList.add('hidden');
+            
+            recognizedText = '';
+            timeLeft = initialDuration;
+            isReading = true;
+            isTimerRunning = false; // Sayaç onstart eventinde başlayacak
+            stats = { correct: 0, incorrect: 0, totalRead: 0 };
+            
+            evaluateWords(true); 
+            
+            // Ekranda kullanıcı izin verene kadar bekleniyor yazısı çıkar
+            document.getElementById('mic-status-text').innerText = "MİKROFON İZNİ BEKLENİYOR...";
+            document.getElementById('timer-display').innerText = "Bekleniyor...";
+            
+            changeView('reading-view');
+            clearInterval(timerInterval); // Eski sayaçları temizle
+
+            try {
+                recognition.start();
+            } catch (e) { console.error(e); }
+        }
+
+        function updateTimerDisplay() {
+            if(!isTimerRunning) return;
+            const timerEl = document.getElementById('timer-display');
+            const m = Math.floor(timeLeft / 60).toString().padStart(2, '0');
+            const s = (timeLeft % 60).toString().padStart(2, '0');
+            timerEl.innerText = `${m}:${s}`;
+            
+            if (timeLeft <= 10) {
+                timerEl.classList.add('text-red-500', 'animate-pulse');
+            } else {
+                timerEl.classList.remove('text-red-500', 'animate-pulse');
+            }
+        }
+
+        // --- AKILLI Kelime Karşılaştırma Algoritması ---
+        function evaluateWords(isInitial = false) {
+            const refOrig = referenceText.trim().split(/\s+/).filter(w => w.length > 0);
+            
+            if (isInitial) {
+                evaluatedWordsArray = refOrig.map(word => ({ word, status: 'pending' }));
+                renderLiveWords();
+                return;
+            }
+
+            const refClean = refOrig.map(w => w.toLocaleLowerCase('tr').replace(/[^a-zçğıöşü]/g, ''));
+            const recClean = recognizedText.trim().split(/\s+/).filter(w => w.length > 0).map(w => w.toLocaleLowerCase('tr').replace(/[^a-zçğıöşü]/g, ''));
+
+            let recCursor = 0;
+            let correctCount = 0;
+            let incorrectCount = 0;
+
+            evaluatedWordsArray = refOrig.map((origWord, idx) => {
+                const cleanRef = refClean[idx];
+                if (!cleanRef) return { word: origWord, status: 'pending' };
+
+                let found = false;
+                let matchIndex = -1;
+                let searchLimit = Math.min(recCursor + 5, recClean.length);
+                for (let i = recCursor; i < searchLimit; i++) {
+                    if (recClean[i] === cleanRef) {
+                        found = true;
+                        matchIndex = i;
+                        break;
+                    }
+                }
+
+                if (found) {
+                    correctCount++;
+                    recCursor = matchIndex + 1; 
+                    return { word: origWord, status: 'correct' };
+                } else {
+                    let skipped = false;
+                    for (let step = 1; step <= 3; step++) {
+                        if (idx + step < refClean.length) {
+                            let nextRef = refClean[idx + step];
+                            for (let i = recCursor; i < searchLimit; i++) {
+                                if (recClean[i] === nextRef) {
+                                    skipped = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (skipped) break;
+                    }
+
+                    if (skipped) {
+                        incorrectCount++;
+                        return { word: origWord, status: 'incorrect' };
+                    } else if (recClean.length > recCursor + 2) {
+                        incorrectCount++;
+                        recCursor++; 
+                        return { word: origWord, status: 'incorrect' };
+                    } else {
+                        return { word: origWord, status: 'pending' };
+                    }
+                }
+            });
+
+            stats.correct = correctCount;
+            stats.incorrect = incorrectCount;
+            stats.totalRead = evaluatedWordsArray.filter(w => w.status !== 'pending').length;
+
+            renderLiveWords();
+            updateStatsUI();
+        }
+
+        function renderLiveWords() {
+            const container = document.getElementById('live-text-container');
+            container.innerHTML = '';
+            
+            evaluatedWordsArray.forEach(item => {
+                const span = document.createElement('span');
+                span.innerText = item.word;
+                span.className = `word-box word-${item.status}`;
+                container.appendChild(span);
+            });
+        }
+
+        function updateStatsUI() {
+            document.getElementById('stat-total').innerText = stats.totalRead;
+            document.getElementById('stat-correct').innerText = stats.correct;
+            document.getElementById('stat-incorrect').innerText = stats.incorrect;
+        }
+
+        function stopReadingEarly() { finishReading(); }
+
+        function finishReading() {
+            isReading = false;
+            isTimerRunning = false;
+            clearInterval(timerInterval);
+            if (recognition) recognition.stop();
+            
+            playBeep();
+            
+            const timeSpent = initialDuration - Math.max(0, timeLeft);
+            const dateStr = new Date().toLocaleDateString('tr-TR');
+            
+            document.getElementById('res-date').innerText = dateStr;
+            document.getElementById('res-student-name').innerText = studentName;
+            document.getElementById('res-avatar').innerText = studentName.charAt(0).toUpperCase();
+            document.getElementById('res-time').innerText = timeSpent;
+            document.getElementById('res-total').innerText = stats.totalRead;
+            document.getElementById('res-correct').innerText = stats.correct;
+            document.getElementById('res-incorrect').innerText = stats.incorrect;
+
+            const resContainer = document.getElementById('res-text-container');
+            resContainer.innerHTML = '';
+            evaluatedWordsArray.forEach(item => {
+                const span = document.createElement('span');
+                span.innerText = item.word + " ";
+                if (item.status === 'correct') span.className = 'text-emerald-700 font-bold';
+                else if (item.status === 'incorrect') span.className = 'text-red-600 font-bold bg-red-50 px-1 rounded border border-red-100';
+                else span.className = 'text-slate-400';
+                resContainer.appendChild(span);
+            });
+
+            changeView('results-view');
+        }
+
+        // --- Verileri Öğretmene Özel Kaydetme ---
+        function saveResults() {
+            if(!currentTeacher) currentTeacher = "Varsayılan_Ogretmen";
+            
+            const timeSpent = initialDuration - Math.max(0, timeLeft);
+            const accuracy = stats.totalRead > 0 ? Math.round((stats.correct / stats.totalRead) * 100) : 0;
+            
+            const record = {
+                id: Date.now(),
+                date: new Date().toLocaleDateString('tr-TR') + ' ' + new Date().toLocaleTimeString('tr-TR', {hour: '2-digit', minute:'2-digit'}),
+                studentName: studentName,
+                duration: timeSpent,
+                totalRead: stats.totalRead,
+                correct: stats.correct,
+                incorrect: stats.incorrect,
+                accuracy: accuracy
+            };
+
+            const dataKey = `okumaVerileri_${currentTeacher}`;
+            let records = JSON.parse(localStorage.getItem(dataKey)) || [];
+            records.unshift(record); // Yeni kaydı en başa ekle
+            localStorage.setItem(dataKey, JSON.stringify(records));
+
+            alert("Rapor başarıyla kaydedildi!"); // Kullanıcıya onay ver
+            document.getElementById('input-student-name').value = '';
+            changeView('home-view');
+        }
+
+        // --- PAYLAŞIM VE İNDİRME FONKSİYONLARI ---
+
+        function getShareText() {
+            const timeSpent = initialDuration - Math.max(0, timeLeft);
+            const accuracy = stats.totalRead > 0 ? Math.round((stats.correct / stats.totalRead) * 100) : 0;
+            return `*Okuma Değerlendirme Raporu*\n\nÖğretmen: ${currentTeacher}\nÖğrenci: ${studentName}\nOkunan Kelime: ${stats.totalRead}\nDoğru: ${stats.correct}\nYanlış: ${stats.incorrect}\nSüre: ${timeSpent} sn\nBaşarı: %${accuracy}\n\n_Okuma Gelişim Takibi ile hazırlanmıştır._`;
+        }
+
+        function shareWhatsApp() {
+            const text = encodeURIComponent(getShareText());
+            window.open(`https://wa.me/?text=${text}`, '_blank');
+        }
+
+        function shareNative() {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Okuma Raporu - ' + studentName,
+                    text: getShareText()
+                }).catch(err => console.log('Paylaşım iptal edildi', err));
+            } else {
+                alert("Tarayıcınız bu paylaşım yöntemini desteklemiyor. Metni kopyalamayı deneyebilirsiniz.");
+            }
+        }
+
+        function downloadResultPDF() {
+            const element = document.getElementById('pdf-export-area');
+            const opt = {
+                margin:       [0.5, 0.5, 0.5, 0.5],
+                filename:     `${studentName}_Okuma_Raporu.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true },
+                jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
+            };
+            html2pdf().set(opt).from(element).save();
+        }
+
+        function downloadTablePDF() {
+            const element = document.getElementById('table-pdf-area');
+            const opt = {
+                margin:       0.5,
+                filename:     `${currentTeacher}_Sinif_Raporlari.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2 },
+                jsPDF:        { unit: 'in', format: 'a4', orientation: 'landscape' }
+            };
+            html2pdf().set(opt).from(element).save();
+        }
+
+        // --- Verileri Gösterme ve Filtreleme Tablosu ---
+        function renderDataView() {
+            document.getElementById('search-student').value = ''; // Arama çubuğunu sıfırla
+            
+            const dataKey = `okumaVerileri_${currentTeacher}`;
+            allTeacherRecords = JSON.parse(localStorage.getItem(dataKey)) || [];
+            
+            drawTable(allTeacherRecords);
+            changeView('data-view');
+        }
+
+        function filterData() {
+            const searchTerm = document.getElementById('search-student').value.toLocaleLowerCase('tr');
+            if(searchTerm === '') {
+                drawTable(allTeacherRecords);
+                return;
+            }
+            
+            const filtered = allTeacherRecords.filter(record => 
+                record.studentName.toLocaleLowerCase('tr').includes(searchTerm)
+            );
+            drawTable(filtered);
+        }
+
+        function drawTable(records) {
+            const tbody = document.getElementById('data-table-body');
+            const emptyMsg = document.getElementById('empty-data-msg');
+            const tableContainer = document.getElementById('data-table-container');
+
+            tbody.innerHTML = '';
+
+            if (records.length === 0) {
+                emptyMsg.classList.remove('hidden');
+                emptyMsg.classList.add('flex');
+                tableContainer.classList.add('hidden');
+            } else {
+                emptyMsg.classList.add('hidden');
+                emptyMsg.classList.remove('flex');
+                tableContainer.classList.remove('hidden');
+
+                records.forEach((r, index) => {
+                    let badgeClass = r.accuracy > 80 ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' : 
+                                     r.accuracy > 50 ? 'bg-amber-100 text-amber-800 border border-amber-200' : 'bg-red-100 text-red-800 border border-red-200';
+                    let bgClass = index % 2 === 0 ? 'bg-white' : 'bg-slate-50/50';
+
+                    const tr = document.createElement('tr');
+                    tr.className = `border-b border-slate-100 hover:bg-blue-50/50 transition-colors ${bgClass}`;
+                    tr.innerHTML = `
+                        <td class="py-3 px-4 md:py-4 md:px-6 whitespace-nowrap text-[10px] md:text-xs text-slate-500">${r.date}</td>
+                        <td class="py-3 px-4 md:py-4 md:px-6 font-bold text-slate-800">${r.studentName}</td>
+                        <td class="py-3 px-4 md:py-4 md:px-6 text-center text-slate-600 font-medium">${r.duration}</td>
+                        <td class="py-3 px-4 md:py-4 md:px-6 text-center text-blue-600 font-bold">${r.totalRead}</td>
+                        <td class="py-3 px-4 md:py-4 md:px-6 text-center text-emerald-600 font-bold bg-emerald-50/50">${r.correct}</td>
+                        <td class="py-3 px-4 md:py-4 md:px-6 text-center text-red-600 font-bold bg-red-50/50">${r.incorrect}</td>
+                        <td class="py-3 px-4 md:py-4 md:px-6 text-center">
+                            <span class="px-2 py-1 md:px-3 rounded-full text-[10px] md:text-xs font-bold ${badgeClass}">%${r.accuracy}</span>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+        }
+
+        function clearData() {
+            if(confirm("Bu sınıfa ait tüm raporları kalıcı olarak silmek istediğinize emin misiniz? (Diğer öğretmenlerin verisi silinmez)")) {
+                const dataKey = `okumaVerileri_${currentTeacher}`;
+                localStorage.removeItem(dataKey);
+                allTeacherRecords = [];
+                drawTable([]);
+            }
+        }
+    </script>
+</body>
+</html>
